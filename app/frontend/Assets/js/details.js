@@ -46,6 +46,7 @@ document.getElementById('resumeForm').addEventListener('submit', function (event
                   <h3 style="border-bottom: 2px solid #ecf0f1; padding-bottom: 5px;">Contact</h3>
                   <p style="font-size: 0.9em; margin: 5px 0;">${data.phone}</p>
                   <p style="font-size: 0.9em; margin: 5px 0;">${data.email}</p>
+                  <p style="font-size: 0.9em; margin: 5px 0;">${data.website}</p>
               </div>
 
               <div style="margin-bottom: 20px;">
@@ -183,7 +184,7 @@ document.getElementById('resumeForm').addEventListener('submit', function (event
         <div style="width: 80%; margin: 20px auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
       <div style="text-align: center; border-bottom: 2px solid #cccccc; padding-bottom: 10px;">
           <h1 style="font-size: 2em; color: #333333;">${data.name}</h1>
-          <p style="font-size: 1em; color: #666666;">${data.jobTitle} | Phone: ${data.phone} | Email: viswaganisetti@gmail.com</p>
+          <p style="font-size: 1em; color: #666666;">${data.jobTitle} | Phone: ${data.phone} | Email: ${data.email} | Website: ${data.website}</p>
       </div>
 
       <div style="margin-top: 20px;">
