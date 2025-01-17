@@ -29,6 +29,9 @@ def update_resume(resume_id: str, resume: Resume ):
 
     return  {"message": "Resume updated successfully"}
 
+# get resumes 
+# filehandling
+
 
 
 

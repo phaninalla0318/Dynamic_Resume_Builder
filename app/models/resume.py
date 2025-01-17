@@ -1,17 +1,31 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
-class Resume(BaseModel):
-    name: str
+class PersonalInformation(BaseModel):
+    full_name: str
     email: str
-    phoneno: int
+    phone_number: int
+    website: Optional[str] = None
+
+class Education(BaseModel):
+    degree: str
+    college: str
+    graduation_year: int
+
+class WorkExperience(BaseModel):
     job_title: str
-    company_name: str
+    company: str
     start_date: str
     end_date: str
     description: str
-    school_name: str
-    degree: str
+
+class Resume(BaseModel):
+    personal_information: PersonalInformation
+    education: List[Education]
+    work_experience: List[WorkExperience]
     skills: List[str]
+    projects: List[str]
+    certifications: List[str]
     languages: List[str]
-    
+    hobbies: List[str]
+    references: List[str]
