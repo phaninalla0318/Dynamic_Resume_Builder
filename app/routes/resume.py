@@ -29,6 +29,14 @@ def update_resume(resume_id: str, resume: Resume ):
 
     return  {"message": "Resume updated successfully"}
 
+@router.post("/saveresume", tags=["curl"])
+async def save_resume(resume: Resume):
+    try:
+        result = resumes_collection.insert_one(resume.dict())
+        return {"message": "Resume saved successfully", "resume_id": str(result.inserted_id)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error saving resume: " + str(e))
+
 # get resumes 
 # filehandling
 
