@@ -27,6 +27,8 @@ document.getElementById('resumeForm').addEventListener('submit', function (event
   
   };
 
+  console.log("resumeData---->",resumeData)
+
   
   const templates = {
     1: (data) => `
