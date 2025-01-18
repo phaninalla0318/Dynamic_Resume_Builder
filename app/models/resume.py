@@ -8,7 +8,8 @@ class Resume(BaseModel):
     website: Optional[str] = None
     degree: str
     college: str
-    graduation_year: int
+    StartingDate: int
+    EndingDate: int
     job_title: str
     company: str
     start_date: str
