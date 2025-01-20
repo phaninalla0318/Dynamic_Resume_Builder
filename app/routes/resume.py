@@ -1,12 +1,17 @@
-from fastapi import APIRouter,Request, HTTPException, status
-from models.resume import Resume
+from fastapi import APIRouter,Request, HTTPException, status , File , UploadFile
+from models.resume import Resume,resume
 from database import resumes_collection
 from bson import ObjectId
+from pydantic import BaseModel
+import logging
+import os
+import datetime
+
 from typing import List
 
 router = APIRouter()
-
-
+upload_folder = "resume_uploads"
+os.makedirs(upload_folder , exist_ok=True)
 
 @router.post("/createuser",tags=["curl"])
 def create_resume(resume: Resume):
@@ -30,13 +35,25 @@ def update_resume(resume_id: str, resume: Resume ):
     return  {"message": "Resume updated successfully"}
 
 @router.post("/saveresume", tags=["curl"])
-async def save_resume(resume: Resume):
-    try:
-        result = resumes_collection.insert_one(resume.dict())
-        return {"message": "Resume saved successfully", "resume_id": str(result.inserted_id)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Error saving resume: " + str(e))
+async def save_resume(files: UploadFile = File(...)):
+    print("save_resume",files.filename)
+    fileName = files.filename
+    filePath = os.path.join(upload_folder,fileName)
+    date_time = datetime.datetime.now()
+    data = {
+        "file_name": fileName,
+        "downloaded_date":date_time
+    }
+    
+    resumes_collection.insert_one(data)
+    
+    with open(filePath , "wb") as f:
+        content = await files.read()
+        f.write(content)
 
+    
+    return fileName
+   
 # get resumes 
 # filehandling
 

@@ -1,33 +1,37 @@
 
 
-const selected_template = localStorage.getItem("selectedTemplate");
+  const selected_template = localStorage.getItem("selectedTemplate");
+  let resumeData = {};
 
-document.getElementById('resumeForm').addEventListener('submit', function (event) {
-  event.preventDefault();
+  // Add event listener for form submission to capture the data
+  document.getElementById('resumeForm').addEventListener('submit', function (event) {
+    event.preventDefault();
 
   
-  const resumeData = {
+  resumeData = {
     name: document.getElementById('name').value,
     email: document.getElementById('email').value,
     phone: document.getElementById('phone').value,
     website: document.getElementById('website').value,
     degree: document.getElementById('degree').value,
     college: document.getElementById('college').value,
-    graduationYear: document.getElementById('graduationYear').value,
+    startYear: document.getElementById('StartYear').value,
+    endYear: document.getElementById('EndYear').value,
     jobTitle: document.getElementById('jobTitle').value,
     company: document.getElementById('company').value,
-    startDate: document.getElementById('startDate').value,
-    endDate: document.getElementById('endDate').value,
+    startDate: document.getElementById('startingYear').value,
+    endDate: document.getElementById('endingYear').value,
     skills: document.getElementById('skills').value,
     projects: document.getElementById('projects').value,
     certifications: document.getElementById('certifications').value,
     languages: document.getElementById('languages').value,
     hobbies: document.getElementById('hobbies').value,
     references: document.getElementById('references').value,
+    pdfname: document.getElementById('pdfname').value,
   
   };
 
-  console.log("resumeData---->",resumeData)
+  // console.log("resumeData---->",resumeData)
 
   
   const templates = {
@@ -69,7 +73,8 @@ document.getElementById('resumeForm').addEventListener('submit', function (event
                   <h2 style="color: #2c3e50; border-bottom: 2px solid #2c3e50; display: inline-block;">Education</h2>
                   <p style="margin: 10px 0; font-size: 0.95em;">${data.degree}</p>
                   <p style="margin: 10px 0; font-size: 0.95em;">${data.college}</p>
-                  <p style="margin: 10px 0; font-size: 0.95em;">${data.startDate}</p>
+                  <p style="margin: 10px 0; font-size: 0.95em;">${data.startYear}</p>
+                  <p style="margin: 10px 0; font-size: 0.95em;">${data.endYear}</p>
               </div>
 
               <div style="margin-bottom: 20px;">
@@ -129,7 +134,8 @@ document.getElementById('resumeForm').addEventListener('submit', function (event
           <p>
             <strong>${data.degree}</strong> from ${data.college}
           </p>
-          <p>Graduation Year: ${data.graduationYear}</p>
+          <p>Starting Year: ${data.startYear}</p>
+          <p>Ending Year: ${data.endYear}</p>
         </section>
 
         <!-- Skills Section -->
@@ -194,7 +200,8 @@ document.getElementById('resumeForm').addEventListener('submit', function (event
               <h2 style="font-size: 1.2em; color: #444444; border-bottom: 1px solid #cccccc; padding-bottom: 5px;">Education</h2>
               <p style="margin: 5px 0; color: #555555;">${data.degree}</p>
               <p style="margin: 5px 0; color: #555555;">${data.college}</p>
-              <p style="margin: 5px 0; color: #555555;">${data.graduationYear}</p>
+              <p style="margin: 5px 0; color: #555555;">${data.startYear}</p>
+              <p style="margin: 5px 0; color: #555555;">${data.endYear}</p>
           </div>
 
           <div style="margin-top: 20px;">
@@ -243,18 +250,64 @@ document.getElementById('resumeForm').addEventListener('submit', function (event
   };
 
   
-  const selectedTemplate = templates[selected_template]; 
+  const selectedTemplate = templates[selected_template];
   const resumeContent = selectedTemplate(resumeData);
   document.getElementById('resumeContent').innerHTML = resumeContent;
   document.getElementById('resume').style.display = 'block';
 });
 
-document.getElementById('downloadResume').addEventListener('click', function () {
+
+document.getElementById('downloadResume').addEventListener('click', async function () {
   document.getElementById('downloadResume').style.display = 'none';
   document.getElementById('editResume').style.display = 'none';
+  const pdfname = document.getElementById('pdfname').value
 
-  const element = document.getElementById('resume');
-  html2pdf()
-    .from(element)
-    .save('resume.pdf');
+  // const username = sessionStorage.getItem("name") 
+  // const pdfName = `Resume_${new Date().toISOString().replace(/[:.]/g, '-')}.pdf`;
+  // const time = new Date().toISOString();
+
+  const saveToDatabase = async () => {
+    const element = document.getElementById('resumeContent'); 
+    const options = {
+     
+      filename: `${pdfname}.pdf`,
+      jsPDF :{unit:'pt',format:'letter',orientation:'portrait'}
+    };
+    const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob')
+    console.log("pdfBlob",pdfBlob)
+    const formData = new FormData();
+    formData.append("files", pdfBlob , `${pdfname}.pdf`);
+    
+    try {
+      const response = await fetch('http://localhost:8467/resume/saveresume', {
+        method: 'POST',
+        // headers: { 'Content-Type': 'application/json' },
+        // body: JSON.stringify({ username, pdfName, time }),
+        body:formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log('Resume details saved:', result);
+
+      } else {
+        console.error('Failed to save resume details:', result);
+        alert('Error saving resume details. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error during API call:', error);
+      alert('An error occurred. Please try again later.');
+    }
+  };
+
+  
+  const downloadPDF = () => {
+    const element = document.getElementById('resumeContent'); 
+    html2pdf().from(element).save(pdfname); 
+  };
+
+  
+  await Promise.all([saveToDatabase(), downloadPDF()]);
 });
+

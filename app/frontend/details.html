@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
   <meta charset="utf-8">
@@ -109,12 +109,12 @@
                     <input type="text" class="form-control" id="company" required>
                   </div>
                   <div class="mb-3">
-                    <label for="startingDate" class="form-label">Starting Date</label>
-                    <input type="date" class="form-control" id="startingDate" required>
+                    <label for="startingYear" class="form-label">Starting Year</label>
+                    <input type="date" class="form-control" id="startingYear" required>
                   </div>
                   <div class="mb-3">
-                    <label for="endingDate" class="form-label">Ending Date</label>
-                    <input type="date" class="form-control" id="endingDate" required>
+                    <label for="endingYear" class="form-label">Ending Year</label>
+                    <input type="date" class="form-control" id="endingYear" required>
                   </div>
                 </div>
               </div>
@@ -191,6 +191,17 @@
                 </div>
               </div>
             </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">PDF_NAME</h5>
+                  <div class="mb-3">
+                    <label for="PDF_NAME" class="form-label">Pdf name</label>
+                    <input type="text" class="form-control" id="pdfname" placeholder="e.g., VISWA, Jane Smith">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <button type="submit" class="btn btn-primary">Generate Resume</button>
         </form>
@@ -199,6 +210,10 @@
     <div id="resume" class="my-5" style="display:none">
       <h2 class="text-center">Your Resume</h2>
       <div id="resumeContent"></div>
+      <div class="mb-3">
+        <label for="name" class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="name" required>
+      </div>
       <button id="downloadResume" class="btn btn-primary">Download Resume</button>
       <button id="editResume" class="btn btn-secondary">Edit Resume</button>
     </div>
