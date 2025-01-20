@@ -3,7 +3,7 @@
   const selected_template = localStorage.getItem("selectedTemplate");
   let resumeData = {};
 
-  // Add event listener for form submission to capture the data
+
   document.getElementById('resumeForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -27,7 +27,7 @@
     languages: document.getElementById('languages').value,
     hobbies: document.getElementById('hobbies').value,
     references: document.getElementById('references').value,
-    pdfname: document.getElementById('pdfname').value,
+    
   
   };
 
@@ -259,12 +259,9 @@
 
 document.getElementById('downloadResume').addEventListener('click', async function () {
   document.getElementById('downloadResume').style.display = 'none';
-  document.getElementById('editResume').style.display = 'none';
   const pdfname = document.getElementById('pdfname').value
 
-  // const username = sessionStorage.getItem("name") 
-  // const pdfName = `Resume_${new Date().toISOString().replace(/[:.]/g, '-')}.pdf`;
-  // const time = new Date().toISOString();
+ 
 
   const saveToDatabase = async () => {
     const element = document.getElementById('resumeContent'); 
@@ -281,8 +278,7 @@ document.getElementById('downloadResume').addEventListener('click', async functi
     try {
       const response = await fetch('http://localhost:8467/resume/saveresume', {
         method: 'POST',
-        // headers: { 'Content-Type': 'application/json' },
-        // body: JSON.stringify({ username, pdfName, time }),
+
         body:formData,
       });
 

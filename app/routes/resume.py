@@ -1,9 +1,9 @@
-from fastapi import APIRouter,Request, HTTPException, status , File , UploadFile
-from models.resume import Resume,resume
+from fastapi import APIRouter, HTTPException,  File , UploadFile
+from models.resume import Resume
 from database import resumes_collection
 from bson import ObjectId
-from pydantic import BaseModel
-import logging
+
+
 import os
 import datetime
 
@@ -53,6 +53,7 @@ async def save_resume(files: UploadFile = File(...)):
 
     
     return fileName
+
    
 # get resumes 
 # filehandling
