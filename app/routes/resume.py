@@ -1,9 +1,7 @@
 from fastapi import APIRouter, HTTPException,  File , UploadFile
-from models.resume import Resume
-from database import resumes_collection
+from models.resume import Resume 
+from database import resumes_collection,users_collection
 from bson import ObjectId
-
-
 import os
 import datetime
 
@@ -35,14 +33,15 @@ def update_resume(resume_id: str, resume: Resume ):
     return  {"message": "Resume updated successfully"}
 
 @router.post("/saveresume", tags=["curl"])
-async def save_resume(files: UploadFile = File(...)):
+async def save_resume(user_id:str, files: UploadFile = File(...)):
     print("save_resume",files.filename)
     fileName = files.filename
     filePath = os.path.join(upload_folder,fileName)
     date_time = datetime.datetime.now()
     data = {
         "file_name": fileName,
-        "downloaded_date":date_time
+        "downloaded_date":date_time,
+        "user_id": user_id
     }
     
     resumes_collection.insert_one(data)
@@ -53,6 +52,16 @@ async def save_resume(files: UploadFile = File(...)):
 
     
     return fileName
+
+@router.get("/resumes")
+async def get_resumes(user_id: str):
+    # Query the database to fetch resumes associated with the user ID
+    resumes = users_collection.query(Resume).filter(Resume.user_id == user_id).all()
+
+    if not resumes:
+        return {"message": "No resumes found."}
+
+    return resumes
 
    
 # get resumes 

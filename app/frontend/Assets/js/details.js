@@ -269,14 +269,18 @@ document.getElementById('downloadResume').addEventListener('click', async functi
      
       filename: `${pdfname}.pdf`,
       jsPDF :{unit:'pt',format:'letter',orientation:'portrait'}
+     
+      
+      
     };
     const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob')
     console.log("pdfBlob",pdfBlob)
-    const formData = new FormData();
+    const formData = new FormData()
     formData.append("files", pdfBlob , `${pdfname}.pdf`);
     
+    
     try {
-      const response = await fetch('http://localhost:8467/resume/saveresume', {
+      const response = await fetch('http://localhost:8468/resume/saveresume', {
         method: 'POST',
 
         body:formData,

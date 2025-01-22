@@ -28,10 +28,10 @@ class Resume(BaseModel):
     hobbies: List[str]  
     references: str
     
-class resume(BaseModel):
-    username: str
-    pdfName: str
-    time: datetime = Field(default_factory=lambda: datetime.now(ZoneInfo("Asia/chennai")))
+# class resume(BaseModel):
+#     username: str
+#     pdfName: str
+#     time: datetime = Field(default_factory=lambda: datetime.now(ZoneInfo("Asia/chennai")))
     
     
    
