@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException,  File , UploadFile
+from fastapi import APIRouter, HTTPException,  File , UploadFile ,Form
 from models.resume import Resume 
-from database import resumes_collection,users_collection
+from database import resumes_collection
 from bson import ObjectId
 import os
 import datetime
@@ -12,7 +12,7 @@ upload_folder = "resume_uploads"
 os.makedirs(upload_folder , exist_ok=True)
 
 @router.post("/createuser",tags=["curl"])
-def create_resume(resume: Resume):
+def create_resume(resume:dict):
     resume_data = resume.__dict__
     result = resumes_collection.insert_one(resume_data)
     return {"message": "Resume created successfully", "resume_id": str(result.inserted_id)}
@@ -32,36 +32,48 @@ def update_resume(resume_id: str, resume: Resume ):
 
     return  {"message": "Resume updated successfully"}
 
-@router.post("/saveresume", tags=["curl"])
-async def save_resume(user_id:str, files: UploadFile = File(...)):
-    print("save_resume",files.filename)
-    fileName = files.filename
-    filePath = os.path.join(upload_folder,fileName)
-    date_time = datetime.datetime.now()
-    data = {
-        "file_name": fileName,
-        "downloaded_date":date_time,
-        "user_id": user_id
-    }
+# @router.post("/saveresume", tags=["curl"])
+# async def save_resume(user_id:str = Form(...), files: UploadFile = File(...)):
+#     print("save_resume",files.filename)
+#     print(user_id)
+#     fileName = files.filename
+#     filePath = os.path.join(upload_folder,fileName)
+#     date_time = datetime.datetime.now()
+#     data = {
+#         "file_name": fileName,
+#         "downloaded_date":date_time,
+#         "user_id": user_id
+#     }
     
-    resumes_collection.insert_one(data)
+#     resumes_collection.insert_one(data)
     
-    with open(filePath , "wb") as f:
-        content = await files.read()
-        f.write(content)
+#     with open(filePath , "wb") as f:
+#         content = await files.read()
+#         f.write(content)
 
     
-    return fileName
+#     return fileName
 
-@router.get("/resumes")
-async def get_resumes(user_id: str):
-    # Query the database to fetch resumes associated with the user ID
-    resumes = users_collection.query(Resume).filter(Resume.user_id == user_id).all()
 
+@router.post("/save_resume", tags=["resume"])
+def save_resume(resume:dict ):
+    print(resume)
+    
+    try:
+        insert_result = resumes_collection.insert_one(resume)
+        return {
+            "message": "Resume saved successfully",
+            "resume_id": str(insert_result.inserted_id)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/resumes",tags=["curl"])
+async def get_resumes(user_id:str):
+    resumes = list(resumes_collection.resumes.find({"user_id": user_id}))  # Exclude `_id` if not needed
     if not resumes:
-        return {"message": "No resumes found."}
-
-    return resumes
+        raise HTTPException(status_code=404, detail="No resumes found for this user")
+    return {"resumes": resumes}
 
    
 # get resumes 

@@ -3,8 +3,6 @@ from routes.auth import router as auth_router
 from routes.resume import router as resume_router
 from fastapi.middleware.cors import CORSMiddleware
 
-
-
 app = FastAPI()
 
 app.add_middleware(

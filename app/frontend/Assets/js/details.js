@@ -1,7 +1,8 @@
 
 
   const selected_template = localStorage.getItem("selectedTemplate");
-  let resumeData = {};
+  let resumeData;
+  let user_id;
 
 
   document.getElementById('resumeForm').addEventListener('submit', function (event) {
@@ -249,65 +250,144 @@
     `,
   };
 
-  
   const selectedTemplate = templates[selected_template];
   const resumeContent = selectedTemplate(resumeData);
   document.getElementById('resumeContent').innerHTML = resumeContent;
   document.getElementById('resume').style.display = 'block';
 });
 
-
 document.getElementById('downloadResume').addEventListener('click', async function () {
   document.getElementById('downloadResume').style.display = 'none';
   const pdfname = document.getElementById('pdfname').value
 
- 
-
-  const saveToDatabase = async () => {
-    const element = document.getElementById('resumeContent'); 
-    const options = {
+  // const saveToDatabase = async () => {
+  //   const element = document.getElementById('resumeContent'); 
+  //   const options = {
      
-      filename: `${pdfname}.pdf`,
-      jsPDF :{unit:'pt',format:'letter',orientation:'portrait'}
+  //     filename: `${pdfname}.pdf`,
+  //     jsPDF :{unit:'pt',format:'letter',orientation:'portrait'}
      
       
-      
-    };
-    const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob')
-    console.log("pdfBlob",pdfBlob)
-    const formData = new FormData()
-    formData.append("files", pdfBlob , `${pdfname}.pdf`);
+  //   };
+//     const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob')
+//     console.log("pdfBlob",pdfBlob)
+//     const formData = new FormData()
+//     formData.append("files", pdfBlob , `${pdfname}.pdf`);
+//     console.log(user_id)
+//     formData.append("user_id",user_id);
     
-    
-    try {
-      const response = await fetch('http://localhost:8468/resume/saveresume', {
-        method: 'POST',
+     
+//     try {
+//       const response = await fetch('http://localhost:8468/resume/saveresume', {
+//         method: 'POST',
+//         body:formData,
+//       });
 
-        body:formData,
-      });
+//       const result = await response.json();
 
-      const result = await response.json();
+//       if (response.ok) {
+//         console.log('Resume details saved:', result);
 
-      if (response.ok) {
-        console.log('Resume details saved:', result);
-
-      } else {
-        console.error('Failed to save resume details:', result);
-        alert('Error saving resume details. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error during API call:', error);
-      alert('An error occurred. Please try again later.');
-    }
-  };
+//       } else {
+//         console.error('Failed to save resume details:', result);
+//         alert('Error saving resume details. Please try again.');
+//       }
+//     } catch (error) {
+//       console.error('Error during API call:', error);
+//       alert('An error occurred. Please try again later.');
+//     }
+//   };
 
   
-  const downloadPDF = () => {
-    const element = document.getElementById('resumeContent'); 
-    html2pdf().from(element).save(pdfname); 
-  };
+//   const downloadPDF = () => {
+//     const element = document.getElementById('resumeContent'); 
+//     html2pdf().from(element).save(pdfname); 
+//   };
 
   
-  await Promise.all([saveToDatabase(), downloadPDF()]);
+//   await Promise.all([saveToDatabase(), downloadPDF()]);
+// });
+
+
+const resume = {
+  personal_info:{
+    name:resumeData.name,
+    email:resumeData.email,
+    phone:resumeData.phone,
+    website:resumeData.website
+  },
+  Education:{
+    degree:resumeData.degree,
+    college:resumeData.college,
+    startYear:resumeData.startYear,
+    endYear:resumeData.degree
+  },
+  WorkExperience:{
+    jobTitle:resumeData. jobTitle,
+    company:resumeData.company,
+    startDate:resumeData.startDate,
+    endDate:resumeData.degree
+  },
+  Skills:{
+    skills:resumeData.skills
+  },
+  Projects:{
+    projects:resumeData.projects
+  },
+  Certifications:{
+    certifications:resumeData.certifications
+  },
+  Languages:{
+    languages:resumeData.languages
+  },
+  Hobbies:{
+    hobbies:resumeData.hobbies
+  },
+  References:{
+    references:resumeData.references
+  }
+}
+
+try {
+  const response = await fetch('http://127.0.0.1:8469/resume/save_resume', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(resume)
+  });
+
+  const result = await response.json();
+  if (response.ok) {
+    console.log('Resume saved successfully:', result);
+    alert('Resume saved successfully!');
+  }
+  else {
+    console.error('Failed to save resume:', result);
+    alert('Error saving resume. Please try again.');
+  }
+} catch (error) {
+  console.error('Error during API call:', error);
+  alert('An error occurred. Please try again later.');
+}
+
+
+const downloadPDF = () => {
+  const element = document.getElementById('resumeContent'); 
+  html2pdf().from(element).save(pdfname); 
+};
+await Promise.all([downloadPDF()]);
+
+
 });
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  user_id = sessionStorage.getItem("user_id"); 
+
+
+});
+
+
 

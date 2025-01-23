@@ -35,8 +35,7 @@ async def register(user: UserCreate):
     existing_user = users_collection.find_one({"email": user.email})
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    hashed_password = hash_password(user.password)
+
     user_id = str(uuid.uuid1()) 
     user_data = user.dict()  
     user_data["user_id"] = user_id
@@ -47,7 +46,7 @@ async def register(user: UserCreate):
 
 @router.post("/login",tags=["Authenticate"])
 def login_user(user: UserLogin):
-    db_user = users_collection.find_one({"email": user.email})
+    db_user = users_collection.find_one({"email": user.email},{"_id":0})
     print(db_user)
     if not db_user:
         raise HTTPException(status_code=401, detail="No user found with this email")
@@ -55,5 +54,5 @@ def login_user(user: UserLogin):
     if user.password != db_user["password"]:
         raise HTTPException(status_code=401, detail="Wrong password")
     
-    return {"status" :"login successfull"}
+    return {"status" :"login successfull" , "content":db_user}
   
