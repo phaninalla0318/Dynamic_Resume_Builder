@@ -310,6 +310,9 @@ document.getElementById('downloadResume').addEventListener('click', async functi
 
 
 const resume = {
+  "user_id": `${user_id}`,
+  "pdfname": `${pdfname}.pdf`,
+  "name":`${resumeData.name}`,
   personal_info:{
     name:resumeData.name,
     email:resumeData.email,
@@ -320,13 +323,13 @@ const resume = {
     degree:resumeData.degree,
     college:resumeData.college,
     startYear:resumeData.startYear,
-    endYear:resumeData.degree
+    endYear:resumeData.endYear
   },
   WorkExperience:{
     jobTitle:resumeData. jobTitle,
     company:resumeData.company,
     startDate:resumeData.startDate,
-    endDate:resumeData.degree
+    endDate:resumeData.endDate
   },
   Skills:{
     skills:resumeData.skills
@@ -345,11 +348,13 @@ const resume = {
   },
   References:{
     references:resumeData.references
-  }
+  },
+  
+  
 }
 
 try {
-  const response = await fetch('http://127.0.0.1:8469/resume/save_resume', {
+  const response = await fetch('http://127.0.0.1:8470/resume/save_resume', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -388,6 +393,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const user_id = sessionStorage.getItem("user_id"); 
+  prefillForm(user_id);
+
+
+async function prefillForm(user_id) {
+  try {
+      const response =  await fetch(`http://127.0.0.1:8470/resume/resumes/?user_id=${user_id}`);
+      if (response.ok) {
+          const resume = await response.json();
+          const details = resume[0];
+          console.log(details)
+          document.getElementById("name").value = details.personal_info.name || "";
+          document.getElementById("email").value = details.personal_info.email || "";
+          document.getElementById("phone").value = details.personal_info.phone || "";
+          document.getElementById('website').value =details.personal_info.website || "";
+          document.getElementById('degree').value= details.Education.degree || "";
+          document.getElementById('college').value= details.Education.college || "";
+          document.getElementById('StartYear').value= details.Education.startYear || "";
+          document.getElementById('EndYear').value= details.Education.endYear || "";
+          document.getElementById('jobTitle').value= details.WorkExperience.jobTitle || "";
+          document.getElementById('company').value= details.WorkExperience.company || "";
+          document.getElementById('startingYear').value= details.WorkExperience.startDate || "";
+          document.getElementById('endingYear').value= details.WorkExperience.endDate || "";
+          document.getElementById('skills').value= details.Skills.skills || "";
+          document.getElementById('projects').value= details.Projects.projects || "";
+          document.getElementById('certifications').value= details.Certifications.certifications || "";
+          document.getElementById('languages').value= details.Languages.languages || "";
+          document.getElementById('hobbies').value= details.Hobbies.hobbies || "";
+          document.getElementById('references').value= details.References.references || "";
+          
+      } else {
+          console.error("No data found for this user.",error);
+      }
+  } catch (error) {
+      console.error("Error fetching user data:", error);
+  }
+}});
+
 
 
 
