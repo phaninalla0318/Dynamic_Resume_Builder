@@ -52,43 +52,7 @@
         <p class="mb-1">All Rights Reserved@2025</p>
       </div>
     </footer>
-    <script>
-    async function prefillForm(user_id) {
-        try {
-            const response = await fetch('http://127.0.0.1:8470/resume/save_resume');
-            if (response.ok) {
-                const data = await response.json();
-                const details = resumeData.details;
     
-                // Prefill form fields
-                document.getElementById("name").value = details.name || "";
-                document.getElementById("email").value = details.email || "";
-                document.getElementById("phone").value = details.phone || "";
-                document.getElementById('website').value =details.website || "";
-                document.getElementById('degree').value= details.degree || "";
-                document.getElementById('college').value= details.college || "";
-                document.getElementById('StartYear').value= details.StartYear || "";
-                document.getElementById('EndYear').value= details.EndYear || "";
-                document.getElementById('jobTitle').value= details.jobTitle || "";
-                document.getElementById('company').value= details.company || "";
-                document.getElementById('startingYear').value= details.startingYear || "";
-                document.getElementById('endingYear').value= details.endingYear || "";
-                document.getElementById('skills').value= details.skills || "";
-                document.getElementById('projects').value= details.projects || "";
-                document.getElementById('certifications').value= details.certifications || "";
-                document.getElementById('languages').value= details.languages || "";
-                document.getElementById('hobbies').value= details.hobbies || "";
-                document.getElementById('references').value= details.references || "";
-                // Add similar lines for other form fields
-            } else {
-                console.error("No data found for this user.");
-            }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-        }
-    }
-        
-</script>
 
     </body>
 </html>
