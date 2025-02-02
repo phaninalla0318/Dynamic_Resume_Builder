@@ -260,133 +260,111 @@ document.getElementById('downloadResume').addEventListener('click', async functi
   document.getElementById('downloadResume').style.display = 'none';
   const pdfname = document.getElementById('pdfname').value
 
-  // const saveToDatabase = async () => {
-  //   const element = document.getElementById('resumeContent'); 
-  //   const options = {
+  const saveToDatabase = async () => {
+    const element = document.getElementById('resumeContent'); 
+    const resume = {
+      "user_id": `${user_id}`,
+      "pdfname": `${pdfname}.pdf`,
+      "name":`${resumeData.name}`,
+      personal_info:{
+        name:resumeData.name,
+        email:resumeData.email,
+        phone:resumeData.phone,
+        website:resumeData.website
+      },
+      Education:{
+        degree:resumeData.degree,
+        college:resumeData.college,
+        startYear:resumeData.startYear,
+        endYear:resumeData.endYear
+      },
+      WorkExperience:{
+        jobTitle:resumeData. jobTitle,
+        company:resumeData.company,
+        startDate:resumeData.startDate,
+        endDate:resumeData.endDate
+      },
+      Skills:{
+        skills:resumeData.skills
+      },
+      Projects:{
+        projects:resumeData.projects
+      },
+      Certifications:{
+        certifications:resumeData.certifications
+      },
+      Languages:{
+        languages:resumeData.languages
+      },
+      Hobbies:{
+        hobbies:resumeData.hobbies
+      },
+      References:{
+        references:resumeData.references
+      },
+      
+      
+    }
+    const options = {
      
-  //     filename: `${pdfname}.pdf`,
-  //     jsPDF :{unit:'pt',format:'letter',orientation:'portrait'}
+      filename: `${pdfname}.pdf`,
+      jsPDF :{unit:'pt',format:'letter',orientation:'portrait'}
      
       
-  //   };
-//     const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob')
-//     console.log("pdfBlob",pdfBlob)
-//     const formData = new FormData()
-//     formData.append("files", pdfBlob , `${pdfname}.pdf`);
-//     console.log(user_id)
-//     formData.append("user_id",user_id);
+    };
+    const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob')
+    console.log("pdfBlob",pdfBlob)
+    const formData = new FormData()
+    formData.append("files", pdfBlob , `${pdfname}.pdf`);
+    console.log(user_id)
     
+    formData.append("user_id",user_id);
+    formData.append("resume",JSON.stringify(resume));
      
-//     try {
-//       const response = await fetch('http://localhost:8468/resume/saveresume', {
-//         method: 'POST',
-//         body:formData,
-//       });
+    try {
+      const response = await fetch('http://localhost:8471/resume/saveresume', {
+        method: 'POST',
+        body:formData,
+      });
 
-//       const result = await response.json();
+      const result = await response.json();
 
-//       if (response.ok) {
-//         console.log('Resume details saved:', result);
+      if (response.ok) {
+        console.log('Resume details saved:', result);
+        alert('Resume saved sucessfully.');
+        
 
-//       } else {
-//         console.error('Failed to save resume details:', result);
-//         alert('Error saving resume details. Please try again.');
-//       }
-//     } catch (error) {
-//       console.error('Error during API call:', error);
-//       alert('An error occurred. Please try again later.');
-//     }
-//   };
-
-  
-//   const downloadPDF = () => {
-//     const element = document.getElementById('resumeContent'); 
-//     html2pdf().from(element).save(pdfname); 
-//   };
+      } else {
+        console.error('Failed to save resume details:', result);
+        alert('Error saving resume details. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error during API call:', error);
+      alert('An error occurred. Please try again later.');
+    }
+    
+  };
 
   
-//   await Promise.all([saveToDatabase(), downloadPDF()]);
-// });
 
 
-const resume = {
-  "user_id": `${user_id}`,
-  "pdfname": `${pdfname}.pdf`,
-  "name":`${resumeData.name}`,
-  personal_info:{
-    name:resumeData.name,
-    email:resumeData.email,
-    phone:resumeData.phone,
-    website:resumeData.website
-  },
-  Education:{
-    degree:resumeData.degree,
-    college:resumeData.college,
-    startYear:resumeData.startYear,
-    endYear:resumeData.endYear
-  },
-  WorkExperience:{
-    jobTitle:resumeData. jobTitle,
-    company:resumeData.company,
-    startDate:resumeData.startDate,
-    endDate:resumeData.endDate
-  },
-  Skills:{
-    skills:resumeData.skills
-  },
-  Projects:{
-    projects:resumeData.projects
-  },
-  Certifications:{
-    certifications:resumeData.certifications
-  },
-  Languages:{
-    languages:resumeData.languages
-  },
-  Hobbies:{
-    hobbies:resumeData.hobbies
-  },
-  References:{
-    references:resumeData.references
-  },
-  
-  
-}
 
-try {
-  const response = await fetch('http://127.0.0.1:8470/resume/save_resume', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(resume)
-  });
-
-  const result = await response.json();
-  if (response.ok) {
-    console.log('Resume saved successfully:', result);
-    alert('Resume saved successfully!');
-  }
-  else {
-    console.error('Failed to save resume:', result);
-    alert('Error saving resume. Please try again.');
-  }
-} catch (error) {
-  console.error('Error during API call:', error);
-  alert('An error occurred. Please try again later.');
-}
 
 
 const downloadPDF = () => {
   const element = document.getElementById('resumeContent'); 
   html2pdf().from(element).save(pdfname); 
+  
+  
 };
-await Promise.all([downloadPDF()]);
+
+
+
+
+await Promise.all([saveToDatabase(), downloadPDF()]);
 
 
 });
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
   user_id = sessionStorage.getItem("user_id"); 
@@ -401,7 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function prefillForm(user_id) {
   try {
-      const response =  await fetch(`http://127.0.0.1:8470/resume/resumes/?user_id=${user_id}`);
+      const response =  await fetch(`http://127.0.0.1:8471/resume/resumes/?user_id=${user_id}`);
       if (response.ok) {
           const resume = await response.json();
           const details = resume[0];
