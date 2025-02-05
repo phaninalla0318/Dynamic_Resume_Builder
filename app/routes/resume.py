@@ -17,14 +17,14 @@ os.makedirs(upload_folder , exist_ok=True)
 
 @router.post("/saveresume", tags=["curl"])
 async def save_resume(user_id:str = Form(...), files: UploadFile = File(...),resume:str= Form(...)):
-    print("save_resume",files.filename)
+    # print("save_resume",files.filename)
     resume_dict = json.loads(resume) 
     print("resume_dict000000000---->",resume_dict)
     fileName = files.filename
     filePath = os.path.join(upload_folder,fileName)
     date_time = datetime.datetime.now()
     data = {
-        "file_name": fileName,
+        
         "downloaded_date":date_time,
         "user_id": user_id,
          **resume_dict
@@ -41,7 +41,7 @@ async def save_resume(user_id:str = Form(...), files: UploadFile = File(...),res
 
 
 @router.get("/resumes/", tags=["curl"])
-async def get_resumes(user_id: str):
+async def get_resumes(user_id: str): 
     user = users_collection.find_one({"user_id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -52,9 +52,22 @@ async def get_resumes(user_id: str):
     return resumes
 
 
+
+@router.delete("/delete_resumes/", tags=["curl"])
+async def delete_resume(user_id: str, pdfname: str):
+
+    delete_result = resumes_collection.delete_one({"user_id": user_id, "pdfname": pdfname})
+
+    if delete_result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Resume not found")
+
+    return {"message": f"Resume '{pdfname}' deleted successfully"}
+
+
     
 # get resumes 
 # filehandling
+
 
 
 

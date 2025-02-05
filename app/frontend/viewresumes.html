@@ -1,58 +1,128 @@
-<!doctype html>
-<html lang="en" data-bs-theme="auto">
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Downloaded Resumes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+<body>
+  <header class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <a href="#" class="navbar-brand">Resume Builder</a>
+      <a href="/app/frontend/login.html" class="btn btn-danger">Logout</a>
+    </div>
+  </header>
+
+  <div class="container mt-5">
+    <h1 class="text-center">Downloaded Resumes</h1>
+    <div class="table-responsive mt-4">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Resume</th>
+            <th>Download Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="resumes-container">
+          <!-- Resumes will be dynamically added here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+    const user_id = sessionStorage.getItem("user_id");
+
+    try {
+      const response = await fetch(`http://localhost:8472/resume/resumes/?user_id=${user_id}`);
+      if (response.ok) {
+        const resumes = await response.json();
+        console.log(resumes);
+        const resumesContainer = document.getElementById('resumes-container');
+
+        resumes.reverse();
+
+
+        resumes.forEach(resume => {
+          const row = document.createElement('tr');
+
+          // Resume Name Column
+          const resumeNameCell = document.createElement('td');
+          resumeNameCell.textContent = resume.pdfname;
+
+          
+          const downloadDateCell = document.createElement('td');
+          downloadDateCell.textContent = resume.downloaded_date.slice(0, 10);
+
+          
+          const actionCell = document.createElement('td');
+
+          
+          const viewButton = document.createElement('a');
+          viewButton.href = `http://127.0.0.1:5501/app/resume_uploads/${resume.pdfname}`;
+          viewButton.target = "_blank";
+          viewButton.className = 'btn btn-outline-primary btn-sm me-2';
+
+          const viewIcon = document.createElement('i');
+          viewIcon.className = 'bi bi-eye-fill me-1';
+          viewButton.appendChild(viewIcon);
+          viewButton.appendChild(document.createTextNode('View'));
+
+          
+          const deleteButton = document.createElement('button');
+          deleteButton.className = 'btn btn-outline-danger btn-sm';
+          deleteButton.onclick = () => deleteResume(user_id, resume.pdfname);
+
+          const deleteIcon = document.createElement('i');
+          deleteIcon.className = 'bi bi-trash-fill me-1';
+          deleteButton.appendChild(deleteIcon);
+          deleteButton.appendChild(document.createTextNode('Delete'));
+
+          
+          actionCell.appendChild(viewButton);
+          actionCell.appendChild(deleteButton);
+
+          
+          row.appendChild(resumeNameCell);
+          row.appendChild(downloadDateCell);
+          row.appendChild(actionCell);
+
+          
+          resumesContainer.appendChild(row);
+        });
+      } else {
+        console.error("No resumes found for this user.");
+      }
+    } catch (error) {
+      console.error("Error fetching resumes:", error);
+    }
+  });
+
   
-    <title>View Resumes · Resume Builder</title>
+  async function deleteResume(user_id, pdfname) {
+    if (confirm(`Are you sure you want to delete "${pdfname}"?`)) {
+      try {
+        const response = await fetch(`http://127.0.0.1:8472/resume/delete_resumes/?user_id=${user_id}&pdfname=${pdfname}`, {
+          method: 'DELETE',
+        });
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/album/">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- <iframe src="https://docs.google.com/gview?url=https://path.com/to/your/pdf.pdf&embedded=true" style="width:600px; height:500px;" frameborder="0"></iframe> -->
-
-
-   
-  </head>
-  <body>
-    <header data-bs-theme="dark">
-        
-      <div class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            <a href="#" class="navbar-brand d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-            <strong>RESUME BUILDER</strong>
-          </a>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <section class="py-5 text-center container">
-        <div class="row py-lg-5">
-          <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">Your Downloaded Resumes</h1>
-            <p class="lead text-body-secondary">Here are the resumes you've downloaded:</p>
-          </div>
-        </div>
-      </section>
-
-      <div id="resumes-list" class="album py-5 bg-body-tertiary">
-        <div class="container">
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="resumes-container">            
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <footer class="text-body-secondary py-5">
-      <div class="container">
-        <p class="float-end mb-1"></p>
-        <p class="mb-1">All Rights Reserved@2025</p>
-      </div>
-    </footer>
-    
-
-    </body>
+        if (response.ok) {
+          alert(`Resume "${pdfname}" deleted successfully.`);
+          location.reload(); 
+        } else {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.detail}`);
+        }
+      } catch (error) {
+        console.error("Error deleting resume:", error);
+        alert("An error occurred while deleting the resume.");
+      }
+    }
+  }
+  </script>
+</body>
 </html>
