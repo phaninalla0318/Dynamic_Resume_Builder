@@ -6,30 +6,6 @@ import uuid
 
 router = APIRouter()
 
-# @router.post("/register",tags=["Authenticate"])
-# async def register_user(user: UserCreate):
-#     existing_user = users_collection.find_one({"email": user.email})
-#     if existing_user:
-#         raise HTTPException(status_code=400, detail="Email already registered")
-    
-#     hashed_password = hash_password(user.password)
-#     new_user = UserInDB(**user.dict(), hashed_password=hashed_password)
-#     users_collection.insert_one(new_user.dict())
-    
-#     return {"message": "User registered successfully"}
-
-# @router.post("/register", tags=["Authenticate"])
-# async def register_user(user: UserCreate):
-#     existing_user = users_collection.find_one({"email": user.email})
-#     if existing_user:
-#         raise HTTPException(status_code=400, detail="Email already registered")
-    
-#     hashed_password = hash_password(user.password)
-#     new_user_id = str(uuid.uuid1())  # Generate a unique user ID
-#     new_user = UserInDB(**user.dict(), hashed_password=hashed_password)
-#     users_collection.insert_one(new_user.dict())    
-    
-#     return {"message": "User  registered successfully"}
 @router.post("/register")
 async def register(user: UserCreate):
     existing_user = users_collection.find_one({"email": user.email})
